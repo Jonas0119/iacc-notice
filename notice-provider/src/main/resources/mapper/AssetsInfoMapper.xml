@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tjfae.notice.mapper.AssetsInfoMapper">
+    
+    <resultMap type="com.tjfae.notice.entity.AssetsInfo" id="AssetsInfoResult">
+        <result property="id"    column="id"    />
+        <result property="projectCode"    column="project_code"    />
+        <result property="projectName"    column="project_name"    />
+        <result property="listingPrice"    column="listing_price"    />
+        <result property="transferName"    column="transfer_name"    />
+        <result property="assigneeName"    column="assignee_name"    />
+        <result property="manager"    column="manager"    />
+        <result property="department"    column="department"    />
+        <result property="startDate"    column="start_date"    />
+        <result property="endDate"    column="end_date"    />
+        <result property="flowStatus"    column="flow_status"    />
+        <result property="status"    column="status"    />
+        <result property="signPrice"    column="sign_price"    />
+        <result property="assetsType"    column="assets_type"    />
+        <result property="assetClass"    column="asset_class"    />
+        <result property="basicsType"    column="basics_type"    />
+        <result property="vouchMode"    column="vouch_mode"    />
+        <result property="province"    column="province"    />
+        <result property="city"    column="city"    />
+        <result property="assigneeCount"    column="assignee_count"    />
+        <result property="biddingCount"    column="bidding_count"    />
+        <result property="tradeId"    column="trade_id"    />
+        <result property="filePath"    column="file_path"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectAssetsInfoVo">
+        select id, project_code, project_name, listing_price, transfer_name, assignee_name, manager, department, start_date, end_date, flow_status, status, sign_price, assets_type, asset_class, basics_type, vouch_mode, province, city, assignee_count, bidding_count, trade_id, file_path, create_time, update_time from assets_info
+    </sql>
+
+    <select id="selectAssetsInfoList" parameterType="com.tjfae.notice.entity.AssetsInfo" resultMap="AssetsInfoResult">
+        <include refid="selectAssetsInfoVo"/>
+        <where>  
+            <if test="projectCode != null  and projectCode != ''"> and project_code = #{projectCode}</if>
+            <if test="projectName != null  and projectName != ''"> and project_name like concat('%', #{projectName}, '%')</if>
+            <if test="transferName != null  and transferName != ''"> and transfer_name like concat('%', #{transferName}, '%')</if>
+            <if test="assigneeName != null  and assigneeName != ''"> and assignee_name like concat('%', #{assigneeName}, '%')</if>
+            <if test="manager != null  and manager != ''"> and manager like concat('%', #{manager}, '%')</if>
+            <if test="department != null  and department != ''"> and department like concat('%', #{department}, '%')</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="flowStatus != null  and flowStatus != ''"> and flow_status = #{flowStatus}</if>
+            <if test="assetsType != null  and assetsType != ''"> and assets_type = #{assetsType}</if>
+            <if test="province != null  and province != ''"> and province = #{province}</if>
+            <if test="city != null  and city != ''"> and city = #{city}</if>
+        </where>
+        order by create_time desc
+    </select>
+    
+    <select id="selectAssetsInfoListLimit" parameterType="com.tjfae.notice.entity.AssetsInfo" resultMap="AssetsInfoResult">
+        <include refid="selectAssetsInfoVo"/>
+        <where>  
+            <if test="projectCode != null  and projectCode != ''"> and project_code = #{projectCode}</if>
+            <if test="projectName != null  and projectName != ''"> and project_name like concat('%', #{projectName}, '%')</if>
+            <if test="transferName != null  and transferName != ''"> and transfer_name like concat('%', #{transferName}, '%')</if>
+            <if test="assigneeName != null  and assigneeName != ''"> and assignee_name like concat('%', #{assigneeName}, '%')</if>
+            <if test="manager != null  and manager != ''"> and manager like concat('%', #{manager}, '%')</if>
+            <if test="department != null  and department != ''"> and department like concat('%', #{department}, '%')</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="flowStatus != null  and flowStatus != ''"> and flow_status = #{flowStatus}</if>
+            <if test="assetsType != null  and assetsType != ''"> and assets_type = #{assetsType}</if>
+            <if test="province != null  and province != ''"> and province = #{province}</if>
+            <if test="city != null  and city != ''"> and city = #{city}</if>
+        </where>
+        order by create_time desc
+        limit 100
+    </select>
+    
+    <select id="selectAssetsInfoById" parameterType="Long" resultMap="AssetsInfoResult">
+        <include refid="selectAssetsInfoVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertAssetsInfo" parameterType="com.tjfae.notice.entity.AssetsInfo" useGeneratedKeys="true" keyProperty="id">
+        insert into assets_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="projectCode != null">project_code,</if>
+            <if test="projectName != null">project_name,</if>
+            <if test="listingPrice != null">listing_price,</if>
+            <if test="transferName != null">transfer_name,</if>
+            <if test="assigneeName != null">assignee_name,</if>
+            <if test="manager != null">manager,</if>
+            <if test="department != null">department,</if>
+            <if test="startDate != null">start_date,</if>
+            <if test="endDate != null">end_date,</if>
+            <if test="flowStatus != null">flow_status,</if>
+            <if test="status != null">status,</if>
+            <if test="signPrice != null">sign_price,</if>
+            <if test="assetsType != null">assets_type,</if>
+            <if test="assetClass != null">asset_class,</if>
+            <if test="basicsType != null">basics_type,</if>
+            <if test="vouchMode != null">vouch_mode,</if>
+            <if test="province != null">province,</if>
+            <if test="city != null">city,</if>
+            <if test="assigneeCount != null">assignee_count,</if>
+            <if test="biddingCount != null">bidding_count,</if>
+            <if test="tradeId != null">trade_id,</if>
+            <if test="filePath != null">file_path,</if>
+            create_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="projectCode != null">#{projectCode},</if>
+            <if test="projectName != null">#{projectName},</if>
+            <if test="listingPrice != null">#{listingPrice},</if>
+            <if test="transferName != null">#{transferName},</if>
+            <if test="assigneeName != null">#{assigneeName},</if>
+            <if test="manager != null">#{manager},</if>
+            <if test="department != null">#{department},</if>
+            <if test="startDate != null">#{startDate},</if>
+            <if test="endDate != null">#{endDate},</if>
+            <if test="flowStatus != null">#{flowStatus},</if>
+            <if test="status != null">#{status},</if>
+            <if test="signPrice != null">#{signPrice},</if>
+            <if test="assetsType != null">#{assetsType},</if>
+            <if test="assetClass != null">#{assetClass},</if>
+            <if test="basicsType != null">#{basicsType},</if>
+            <if test="vouchMode != null">#{vouchMode},</if>
+            <if test="province != null">#{province},</if>
+            <if test="city != null">#{city},</if>
+            <if test="assigneeCount != null">#{assigneeCount},</if>
+            <if test="biddingCount != null">#{biddingCount},</if>
+            <if test="tradeId != null">#{tradeId},</if>
+            <if test="filePath != null">#{filePath},</if>
+            now(),
+        </trim>
+    </insert>
+
+    <update id="updateAssetsInfo" parameterType="com.tjfae.notice.entity.AssetsInfo">
+        update assets_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="projectCode != null">project_code = #{projectCode},</if>
+            <if test="projectName != null">project_name = #{projectName},</if>
+            <if test="listingPrice != null">listing_price = #{listingPrice},</if>
+            <if test="transferName != null">transfer_name = #{transferName},</if>
+            <if test="assigneeName != null">assignee_name = #{assigneeName},</if>
+            <if test="manager != null">manager = #{manager},</if>
+            <if test="department != null">department = #{department},</if>
+            <if test="startDate != null">start_date = #{startDate},</if>
+            <if test="endDate != null">end_date = #{endDate},</if>
+            <if test="flowStatus != null">flow_status = #{flowStatus},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="signPrice != null">sign_price = #{signPrice},</if>
+            <if test="assetsType != null">assets_type = #{assetsType},</if>
+            <if test="assetClass != null">asset_class = #{assetClass},</if>
+            <if test="basicsType != null">basics_type = #{basicsType},</if>
+            <if test="vouchMode != null">vouch_mode = #{vouchMode},</if>
+            <if test="province != null">province = #{province},</if>
+            <if test="city != null">city = #{city},</if>
+            <if test="assigneeCount != null">assignee_count = #{assigneeCount},</if>
+            <if test="biddingCount != null">bidding_count = #{biddingCount},</if>
+            <if test="filePath != null">file_path = #{filePath},</if>
+            update_time = now(),
+        </trim>
+        where id = #{id}
+    </update>
+
+    <update id="updateTradeId" parameterType="com.tjfae.notice.entity.AssetsInfo">
+        update assets_info set trade_id = #{tradeId}, update_time = now() where id = #{id}
+    </update>
+
+    <delete id="deleteAssetsInfoById" parameterType="Long">
+        delete from assets_info where id = #{id}
+    </delete>
+
+    <delete id="deleteAssetsInfoByIds" parameterType="String">
+        delete from assets_info where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper> 

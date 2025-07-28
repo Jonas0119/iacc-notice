@@ -1,0 +1,50 @@
+# 开发环境Bootstrap配置
+# 完全禁用Nacos和云组件，使用本地配置
+
+server:
+  port: 8090
+
+# Spring配置
+spring:
+  application:
+    name: notice-provider
+  profiles:
+    active: dev
+  main:
+    allow-bean-definition-overriding: true
+  
+  # 完全禁用Spring Cloud相关组件
+  cloud:
+    # 禁用配置中心
+    config:
+      enabled: false
+    # 禁用服务发现
+    discovery:
+      enabled: false
+    # 禁用Nacos
+    nacos:
+      discovery:
+        enabled: false
+      config:
+        enabled: false
+    # 禁用Sentinel
+    sentinel:
+      enabled: false
+      transport:
+        dashboard: 
+      eager: false
+  
+  # 禁用自动配置
+  autoconfigure:
+    exclude:
+      - com.alibaba.cloud.nacos.NacosConfigAutoConfiguration
+      - com.alibaba.cloud.nacos.NacosDiscoveryAutoConfiguration
+      - com.alibaba.cloud.sentinel.SentinelAutoConfiguration
+      - com.alibaba.cloud.nacos.discovery.NacosDiscoveryAutoConfiguration
+
+# 日志配置 - 减少Nacos相关日志噪音
+logging:
+  level:
+    com.alibaba.nacos: OFF
+    com.alibaba.cloud: OFF
+    com.alibaba.csp.sentinel: OFF

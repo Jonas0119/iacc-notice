@@ -1,0 +1,61 @@
+# Spring Boot 主配置文件
+# 支持多环境配置：dev(开发环境), prod(生产环境)
+
+spring:
+  application:
+    name: notice-provider
+  main:
+    allow-bean-definition-overriding: true
+  
+  # 激活的配置文件
+  # 开发环境使用SQLite数据库和本地配置
+  # 生产环境使用MySQL数据库和Nacos配置中心
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}  # 默认使用开发环境，可通过环境变量或启动参数覆盖
+  
+  servlet:
+    content-type: text/html
+    multipart:
+      maxFileSize: 100MB
+      maxRequestSize: 100MB
+  
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+    serialization:
+      write-dates-as-timestamps: false
+
+# Swagger配置
+swagger:
+  enabled: true
+
+---
+# 开发环境配置片段
+spring:
+  config:
+    activate:
+      on-profile: dev
+  # 开发环境禁用Nacos
+  cloud:
+    nacos:
+      discovery:
+        enabled: false
+      config:
+        enabled: false
+
+---
+# 生产环境配置片段
+spring:
+  config:
+    activate:
+      on-profile: prod
+  # 生产环境启用Nacos
+  cloud:
+    nacos:
+      discovery:
+        enabled: true
+      config:
+        enabled: true
+        # 引入Nacos配置
+        import:
+          - nacos:${spring.application.name}-${spring.profiles.active}.yaml

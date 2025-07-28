@@ -1,0 +1,373 @@
+# 开发环境配置
+# 使用SQLite数据库和本地配置，不依赖Nacos
+
+server:
+  port: 8090
+  servlet:
+    context-path: /
+
+# Spring配置
+spring:
+  application:
+    name: notice-provider
+  profiles:
+    active: dev
+  
+  # 数据源配置 - SQLite
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driverClassName: org.sqlite.JDBC
+    url: jdbc:sqlite:./data/iacc-notice.db
+    username: 
+    password: 
+    # 动态数据源配置
+    dynamic:
+      primary: master # 设置默认的数据源或者数据源组，默认值即为master
+      strict: false # 严格匹配数据源，默认false. true未匹配到指定数据源时抛异常,false使用默认数据源
+      datasource:
+        master: # 主数据源
+          url: jdbc:sqlite:./data/iacc-notice.db
+          driver-class-name: org.sqlite.JDBC
+          username: 
+          password: 
+    druid:
+      # 初始连接数
+      initialSize: 5
+      # 最小连接池数量
+      minIdle: 10
+      # 最大连接池数量
+      maxActive: 20
+      # 配置获取连接等待超时的时间
+      maxWait: 60000
+      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位毫秒
+      timeBetweenEvictionRunsMillis: 60000
+      # 配置一个连接在池中最小生存的时间，单位毫秒
+      minEvictableIdleTimeMillis: 300000
+      # 配置一个连接在池中最大生存的时间，单位毫秒
+      maxEvictableIdleTimeMillis: 900000
+      # 配置检测连接是否有效
+      validationQuery: SELECT 1
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      # 打开PSCache，并且指定每个连接上PSCache的大小
+      poolPreparedStatements: true
+      maxPoolPreparedStatementPerConnectionSize: 20
+      # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+      filters: stat,wall,slf4j
+      # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
+      connectionProperties: druid.stat.mergeSql\=true;druid.stat.slowSqlMillis\=5000
+  
+  # JPA配置
+  jpa:
+    # 自动创建表结构
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    database-platform: org.hibernate.dialect.SQLiteDialect
+  
+  # 自动初始化数据库
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:db/schema-sqlite.sql
+      data-locations: 
+      encoding: utf-8
+      continue-on-error: true
+
+  # Redis配置
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    database: 0
+    password: 
+    timeout: 10s
+    lettuce:
+      pool:
+        # 连接池最大连接数
+        max-active: 200
+        # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-wait: -1ms
+        # 连接池中的最大空闲连接
+        max-idle: 10
+        # 连接池中的最小空闲连接
+        min-idle: 0
+
+  # 排除可能导致冲突的自动配置
+  autoconfigure:
+    exclude:
+      - com.alibaba.cloud.nacos.NacosConfigAutoConfiguration
+      - com.alibaba.cloud.nacos.NacosDiscoveryAutoConfiguration
+      - com.alibaba.cloud.sentinel.SentinelAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+  
+  # Spring Cloud 相关组件完全禁用
+  cloud:
+    # 禁用配置中心
+    config:
+      enabled: false
+    # 禁用服务发现
+    discovery:
+      enabled: false
+    # 禁用 Netflix 组件
+    netflix:
+      config:
+        enabled: false
+      discovery:
+        enabled: false
+      hystrix:
+        enabled: false
+      ribbon:
+        enabled: false
+      zuul:
+        enabled: false
+    # 禁用 OpenFeign
+    openfeign:
+      enabled: false
+  
+  # Spring Mail配置（开发环境使用本地配置）
+  mail:
+    host: smtp.mxhichina.com
+    port: 465
+    protocol: smtps
+    default-encoding: UTF-8
+    username: cunzheng@tjfadc.com
+    password: 1qazXSW@
+    test-connection: true
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+
+# 禁用 Netflix Archaius 动态配置
+archaius:
+  enabled: false
+  configurationSource:
+    additionalUrls: ""
+
+# MyBatis配置
+mybatis:
+  # 搜索指定包别名
+  typeAliasesPackage: com.tjfae.notice.entity
+  # 配置mapper的扫描，找到所有的mapper.xml映射文件
+  mapperLocations: classpath*:mapper/**/*Mapper.xml
+  # 加载全局的配置文件（包含了所有配置，不再需要额外的configuration）
+  configLocation: classpath:mybatis/mybatis-config.xml
+
+# tk.mybatis 明确配置
+mapper:
+  mappers:
+    - tk.mybatis.mapper.common.Mapper
+  not-empty: false
+  identity: SQLITE
+  safe-delete: true
+  safe-update: true
+  # 明确指定扫描包，避免与其他配置冲突
+  scan-package: com.tjfae.notice.mapper
+  # 禁用默认的全局扫描
+  auto-delimited: false
+  # 将枚举按简单类型处理
+  enum-as-simple-type: true
+
+# 分页插件配置已移至mybatis-config.xml中手动配置
+# pagehelper配置已移除，避免与MyBatis手动配置冲突
+
+# Swagger配置
+swagger:
+  title: IACC司法存证通知公告系统API
+  description: 司法存证通知公告系统接口文档
+  version: 1.0.0
+  termsOfServiceUrl: 
+  contactName: 开发团队
+  contactUrl: 
+  contactEmail: 
+  license: 
+  licenseUrl: 
+
+# 文件上传配置
+spring.servlet.multipart:
+  # 是否启用文件上传
+  enabled: true
+  # 单个文件大小
+  max-file-size: 100MB
+  # 设置总上传的文件大小
+  max-request-size: 200MB
+
+# 日志配置
+logging:
+  level:
+    com.tjfae.notice: DEBUG
+    org.springframework.web: INFO
+    org.mybatis: DEBUG
+    tk.mybatis: WARN
+    # 减少MyBatis扫描警告
+    tk.mybatis.spring.mapper: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{50} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{50} - %msg%n"
+
+# 应用相关配置
+app:
+  # 文件存储路径
+  file-upload-path: ./upload/
+  # 证据文件存储路径
+  evidence-path: ./upload/evidence/
+  # 通知公告文件存储路径
+  notice-path: ./upload/notice/
+  # 临时文件路径
+  temp-path: ./temp/
+  # 最大文件大小(MB)
+  max-file-size: 100
+
+# 业务配置
+business:
+  # 通知公告编号前缀
+  notice-code-prefix: "GGZDL"
+  # 存证编号前缀
+  evidence-code-prefix: "CZZDL"
+  # 默认用户
+  default-user: "admin"
+  # 邮件发送配置
+  mail:
+    enabled: true
+    host: smtp.mxhichina.com
+    port: 465
+    protocol: smtps
+    username: cunzheng@tjfadc.com
+    password: 1qazXSW@
+    from: cunzheng@tjfadc.com 
+  
+  # OSS配置
+  oss:
+    enabled: false
+    endpoint: 
+    accessKeyId: 
+    accessKeySecret: 
+    bucketName: iacc-notice
+    domain:
+
+# 区块链平台配置（开发环境使用模拟值）
+bcplatform:
+  url: http://localhost:8080/mock
+  skychain-url: http://localhost:8080/mock/skychain
+  createEvidence: /createEvidence
+  skychain-createEvidence: /skychain/createEvidence
+  username: dev_user
+  password: dev_password
+
+# 天空链平台配置（开发环境使用模拟值）
+skychain:
+  url: http://localhost:8080/mock
+  username: dev_user
+  password: dev_password
+
+# 华山平台配置（开发环境使用模拟值）
+hs:
+  url: http://localhost:8080/mock
+  urlPath: http://localhost:8080/mock/hs
+  platformId: dev_platform
+  appKey: dev_app_key
+  success: success
+  queryUserInfoRequest: /queryUserInfo
+  queryCompInfoRequest: /queryCompInfo
+  username: dev_user
+  password: dev_password
+
+# 用户中心配置（开发环境使用模拟值）
+usercenter:
+  url: http://localhost:8080/mock
+  username: dev_user
+  password: dev_password
+
+# 系统配置（开发环境使用模拟值）
+system:
+  url: http://localhost:8080/mock/system
+
+# 证据验证服务配置（开发环境使用模拟值）
+evidence:
+  verify:
+    url: http://localhost:8080/mock
+    username: dev_user
+    password: dev_password
+
+# 通知服务配置（开发环境使用模拟值）
+notify:
+  url: http://localhost:8080/mock/notify
+  push:
+    url: http://localhost:8080/mock/push
+  update:
+    url: http://localhost:8080/mock/update
+  cancel:
+    url: http://localhost:8080/mock/cancel
+  callback:
+    url: http://localhost:8080/mock/callback
+
+# 邮件服务配置（开发环境禁用）
+mail:
+  host: smtp.mxhichina.com
+  port: 465
+  protocol: smtps
+  username: cunzheng@tjfadc.com
+  password: 1qazXSW@
+  from: cunzheng@tjfadc.com
+  enabled: true
+
+# 第三方服务配置（开发环境使用模拟值）
+external:
+  service:
+    url: http://localhost:8080/mock/external
+    timeout: 30000
+    retry: 3
+
+# 支付配置（开发环境使用模拟值）
+pay:
+  url: http://localhost:8080/mock/pay
+  callback:
+    url: http://localhost:8080/mock/pay/callback
+  enabled: false
+
+# 阿里云OSS配置
+aliyun:
+  oss:
+    key: 
+    secret: 
+    bucket: noticefiles
+    endpoint: oss-cn-beijing.aliyuncs.com
+
+# 产品中心OSS配置（开发环境使用模拟值）
+oss:
+  productcenter:
+    key: dev_product_key
+    secret: dev_product_secret
+    bucket: dev-product-bucket
+    endpoint: oss-cn-hangzhou.aliyuncs.com
+
+# OSS通用配置
+ENDPOINT: oss-cn-beijing.aliyuncs.com
+ENDPOINT_SHOW: oss-cn-beijing.aliyuncs.com
+AccessKeyId: 
+AccessKeySecret: 
+BUCKET_NAME: noticefiles
+
+# 其他配置
+templatepath: ./templates
+defaultviews: 2000
+payUrl: http://localhost:8080/mock/pay
+configtxlator:
+  url: http://localhost:8080/mock/configtxlator
+
+ 
+
+# 管理端点配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always 

@@ -1,0 +1,53 @@
+# Tomcat
+server:
+  port: 8090
+
+# Spring
+spring:
+  cloud:
+    nacos:
+      discovery:
+        # 服务注册地址
+        server-addr: 172.30.3.231:8848
+#        server-addr: 172.17.0.2:9091
+#        namespace:
+        group: DEFAULT_GROUP
+        #强制配置服务的注册ip
+        #ip: xxx
+        #强制配置服务的注册端口
+        #port: -1
+      config:
+        # 配置中心地址
+        server-addr: 172.30.3.231:8848
+#        server-addr: 172.17.0.2:9091
+#        namespace:
+        prefix: ${spring.application.name}
+        # 配置文件格式
+        file-extension: yaml
+        group: DEFAULT_GROUP
+        # 共享配置
+        shared-configs:
+          - data-id: redis-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
+            group: DEFAULT_GROUP
+            refresh: true
+          - data-id: application-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
+            group: DEFAULT_GROUP
+            refresh: true
+          - data-id: shared-druid.yaml
+            group: DEFAULT_GROUP
+            refresh: true
+          #配置限流参数
+          - data-id: sentinelRule.yaml
+            group: DEFAULT_GROUP
+            refresh: true
+    sentinel:
+      # 取消控制台懒加载
+      eager: true
+      transport:
+        # 控制台地址
+        #dashboard: 192.168.21.13:8718
+        dashboard: tjfae:8848
+
+
+
+
